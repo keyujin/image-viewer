@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+<head>
+</head>
+<body>
+    <h1>Interop Data</h1>
+
+    {%  for item in data %}
+        <p>Item #: {{ item.pk }}</p>
+        <p>Orientation: {{ item.orientation }}</p>
+        <p>Color: {{ item.color }}</p>
+        <p>Alphanumeric: {{ item.alphanumeric }}</p>
+        <p>Shape: {{ item.shape }}</p>
+        <p>Image: {{ item.image }}</p>
+        <p>-------------------------------------</p>
+    {% endfor %}
+</body>
+</html>
