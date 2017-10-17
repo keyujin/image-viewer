@@ -59,16 +59,18 @@
         });
 
         $("#done_cropping").on('click', function(){
-            basic.croppie('result', 'blob').then(function(blob){
+            basic.croppie('result', 'base64').then(function(blob){
 
+                var img = document.createElement('img');
+                img.src = blob;
+                document.getElementById('submittedImgs').append(img);
+                
                 var fd = new FormData()
                 fd.append('orientation', $("#orientation").val());
                 fd.append('shape', $("#shape").val());
                 fd.append('alphanumeric', $("#alphanumeric").val());
                 fd.append('color', $("#color").val());
-                fd.append('image', blob);
-
-
+                fd.append('image', blob );
                 $.ajax({
                     type: "POST",
                     url: "/submitToInterop/",
@@ -76,13 +78,11 @@
                     processData: false,
                     contentType: false
                 }).done(function(){
-                   console.log(data);
+                   //console.log(data);
                 });
 
-                var img = document.createElement('img');
-                img.src = window.URL.createObjectURL(blob);
-                document.getElementById('submittedImgs').append(img);
             })
+
         });
     </script>
 
