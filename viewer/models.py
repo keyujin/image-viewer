@@ -10,4 +10,4 @@ class Target(models.Model):
         shape = models.CharField(max_length=10)
         alphanumeric = models.CharField(max_length=10)
         color = models.CharField(max_length=10)
-        image = models.CharField(max_length=10000000000000000000)
+        image = models.TextField()

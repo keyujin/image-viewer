@@ -64,6 +64,8 @@
                 var img = document.createElement('img');
                 img.src = blob;
                 document.getElementById('submittedImgs').append(img);
+
+                console.log(blob);
                 
                 var fd = new FormData()
                 fd.append('orientation', $("#orientation").val());
