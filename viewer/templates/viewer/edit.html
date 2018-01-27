@@ -14,7 +14,7 @@
         </select>
 
         <div class="ImageData" style="margin: 100px">
-            <input name="image" id="image" value="{{ item.image }}"></input>
+
             <label>Orientation: </label>
             <input name="orientation" id="orientation" value={{ item.orientation }}></input>
 
@@ -26,20 +26,27 @@
 
             <label>Color: </label>
             <input name="color" id="color" value="{{ item.color }}"></input>
+
+            <br></br>
+            <img name = "image" id="image" src="{{ item.image }}"/>
+
         </div>
 
         <script>
         $( "select" )
             .change(function() {
+                {% for item in data %}
                 var something = $('#item_id').val();
-            {% for item in data %}
-                {% if item.pk == something %}
-                    $("#orientation").val({{ item.orientation }});
-                    $("#shape").val({{ item.shape }});
-                    $("#alphanumeric").val({{ item.alphanumeric }});
-                    $("#color").val({{ item.color }});
-                {% endif %}
-            {% endfor %}
+                var pk = {{ item.pk }};
+
+                  if(something == pk){
+                    $("#orientation").val("{{ item.orientation }}");
+                    $("#shape").val("{{ item.shape }}");
+                    $("#alphanumeric").val("{{ item.alphanumeric }}");
+                    $("#color").val("{{ item.color }}");
+                    document.getElementById("image").src = "{{item.image}}";
+                  }
+                {% endfor %}
         })
         .trigger( "change" );
         </script>

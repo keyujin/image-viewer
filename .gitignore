@@ -1,5 +1,6 @@
-db.sqlite3
+*.sqlite3
 manage.py
+imageviewer/__pycache__/*
 viewer/migrations/*
 viewer/__pycache__/*
 viewer/static/media/*
