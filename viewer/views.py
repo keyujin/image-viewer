@@ -13,10 +13,13 @@ def index(request):
 def submit(request):
     return render(request, "viewer/submit.html")
 
-
 def interop(request):
     data = Target.objects.order_by('pk')
     return render(request, "viewer/interop.html", {'data': data})
+
+def edit(request):
+    data = Target.objects.order_by('pk')
+    return render(request, "viewer/edit.html", {'data': data})
 
 @api_view(['POST'])
 def submitImage(request):
@@ -36,5 +39,16 @@ def submitToInterop(request):
 
     t = Target(orientation=orientation, shape=shape, alphanumeric=alphanumeric, color=color, image=img)
     t.save()
+
+    return Response(status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def updateImage(request):
+    obj = Target.objects.get(pk=request.data.get("item_id"))
+    obj.orientation = request.data.get("orientation")
+    obj.shape = request.data.get("shape")
+    obj.alphanumeric = request.data.get("alphanumeric")
+    obj.color = request.data.get("color")
+    obj.save()
 
     return Response(status=status.HTTP_200_OK)

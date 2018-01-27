@@ -1,0 +1,5 @@
+db.sqlite3
+manage.py
+viewer/migrations/*
+viewer/__pycache__/*
+viewer/static/media/*
