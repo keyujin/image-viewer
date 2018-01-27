@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+<head>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+</head>
+<body>
+    <h2>Edit Image</h2>
+
+    <form method = "post" action = "/updateImage/" enctype = "multipart/form-data">
+        <select name="item_id", id="item_id">
+            {% for item in data %}
+                <option selected="selected" value="{{ item.pk }}">{{ item.pk }}</option>
+            {% endfor %}
+        </select>
+
+        <div class="ImageData" style="margin: 100px">
+            <label>Orientation: </label>
+            <input name="orientation" id="orientation" value={{ item.orientation }}></input>
+
+            <label>Shape: </label>
+            <input name="shape" id="shape" value="{{ item.shape }}"></input>
+
+            <label>Alphanumeric: </label>
+            <input name="alphanumeric" id="alphanumeric" value="{{ item.alphanumeric }}"></input>
+
+            <label>Color: </label>
+            <input name="color" id="color" value="{{ item.color }}"></input>
+        </div>
+
+        <script>
+        $( "select" )
+            .change(function() {
+                var something = $('#item_id').val();
+            {% for item in data %}
+                {% if item.pk == something %}
+                    $("#orientation").val({{ item.orientation }});
+                    $("#shape").val({{ item.shape }});
+                    $("#alphanumeric").val({{ item.alphanumeric }});
+                    $("#color").val({{ item.color }});
+                {% endif %}
+            {% endfor %}
+        })
+        .trigger( "change" );
+        </script>
+
+        <input type = "submit">
+
+    </form>
+
+</body>
+</html>
