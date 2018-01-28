@@ -1,9 +1,13 @@
 from django.shortcuts import render
+from django.core.paginator import Paginator
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
-
 from .models import Imgs, Target
+
+# Global number of targets to display in edit
+PAGE_SIZE = 2;
+
 # Create your views here.
 
 def index(request):
@@ -17,9 +21,27 @@ def interop(request):
     data = Target.objects.order_by('pk')
     return render(request, "viewer/interop.html", {'data': data})
 
-def edit(request):
-    data = Target.objects.order_by('pk')
-    return render(request, "viewer/edit.html", {'data': data})
+@api_view(['POST'])
+def edit(request, page_number):
+	if page_number is None:
+		page_number = (int)(1)
+	else:
+		page_number = (int)(page_number)
+
+	print(page_number)
+
+	objects = Target.objects.order_by('pk')
+	objects_paged = Paginator(objects, PAGE_SIZE)
+	page = objects_paged.page(page_number).object_list
+	total_pages = objects_paged.num_pages
+
+	''' LEGACY
+	starting_pk = (page_number-1)*PAGE_SIZE
+	orig_data = Target.objects.order_by('pk')
+	data = orig_data[starting_pk:starting_pk+PAGE_SIZE]
+	total_pages = math.ceil(orig_data.count()/PAGE_SIZE)
+	'''
+	return render(request, "viewer/edit.html", {'data': page, 'page_number':page_number, 'total_pages':total_pages})
 
 @api_view(['POST'])
 def submitImage(request):

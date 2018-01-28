@@ -7,6 +7,6 @@ urlpatterns = [
     url(r'^submitImage/', submitImage, name="submit_image"),
     url(r'^submitToInterop/', submitToInterop, name="submit_to_interop"),
     url(r'^interop/', interop, name="interop"),
-    url(r'^edit/', edit, name='edit'),
+    url(r'^edit/(?:page-(?P<page_number>\d+)/)?$', edit, name='edit'),
     url(r'^updateImage/', updateImage, name='updateImage')
 ]

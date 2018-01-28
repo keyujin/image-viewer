@@ -1,59 +1,95 @@
 <!doctype html>
 <html>
 <head>
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 </head>
+
+<!-- Grab passed variables -->
+<script>
+	{% if page_number %}
+		var page_number = "{{ page_number }}";
+		var total_pages = "{{ total_pages }}";
+		console.log(page_number);
+	{% endif %}
+</script>
+
+<!-- Script to display image metadata -->
+<script id="data_block" type="text/html">
+	<label>Orientation: </label>
+	<input name="orientation" id="orientation" value={{ item.orientation }}></input>
+
+	<label>Shape: </label>
+	<input name="shape" id="shape" value="{{ item.shape }}"></input>
+
+	<label>Alphanumeric: </label>
+	<input name="alphanumeric" id="alphanumeric" value="{{ item.alphanumeric }}"></input>
+
+	<label>Color: </label>
+	<input name="color" id="color" value="{{ item.color }}"></input>
+
+	<br></br>
+	<img name = "image" id="image" src="{{ item.image }}"/>
+</script>
+
 <body>
-    <h2>Edit Image</h2>
+  <h2>Edit Image : Page {{ page_number }}</h2>
 
-    <form method = "post" action = "/updateImage/" enctype = "multipart/form-data">
-        <select name="item_id", id="item_id">
-            {% for item in data %}
-                <option selected="selected" value="{{ item.pk }}">{{ item.pk }}</option>
-            {% endfor %}
-        </select>
+  <form method = "post" action = "/updateImage/" enctype = "multipart/form-data">
 
-        <div class="ImageData" style="margin: 100px">
+		<div id="ImageData" style="margin: 100px"></div>
 
-            <label>Orientation: </label>
-            <input name="orientation" id="orientation" value={{ item.orientation }}></input>
+    <select name="item_id", id="item_id">
+      {% for item in data %}
+        <option selected="selected" value="{{ item.pk }}">{{ item.pk }}</option>
+      {% endfor %}
+    </select>
 
-            <label>Shape: </label>
-            <input name="shape" id="shape" value="{{ item.shape }}"></input>
+    <script>
+      $( "select" )
+        .change(function() {
+          {% for item in data %}
 
-            <label>Alphanumeric: </label>
-            <input name="alphanumeric" id="alphanumeric" value="{{ item.alphanumeric }}"></input>
+          	var something = $('#item_id').val();
+            var pk = {{ item.pk }};
 
-            <label>Color: </label>
-            <input name="color" id="color" value="{{ item.color }}"></input>
-
-            <br></br>
-            <img name = "image" id="image" src="{{ item.image }}"/>
-
-        </div>
-
-        <script>
-        $( "select" )
-            .change(function() {
-                {% for item in data %}
-                var something = $('#item_id').val();
-                var pk = {{ item.pk }};
-
-                  if(something == pk){
-                    $("#orientation").val("{{ item.orientation }}");
-                    $("#shape").val("{{ item.shape }}");
-                    $("#alphanumeric").val("{{ item.alphanumeric }}");
-                    $("#color").val("{{ item.color }}");
-                    document.getElementById("image").src = "{{item.image}}";
-                  }
-                {% endfor %}
+						if(something == pk){
+              var div = document.createElement('div');
+							div.innerHTML = document.getElementById('data_block').innerHTML;
+							$('#ImageData').html(div);
+              $("#orientation").val("{{ item.orientation }}");
+              $("#shape").val("{{ item.shape }}");
+              $("#alphanumeric").val("{{ item.alphanumeric }}");
+              $("#color").val("{{ item.color }}");
+              document.getElementById("image").src = "{{item.image}}";
+            }
+          {% endfor %}
         })
-        .trigger( "change" );
-        </script>
+      .trigger( "change" );
+    </script>
+    <input type = "submit">
+  </form>
 
-        <input type = "submit">
+	<br> --------------------------------------------------- </br>
+	<h2> Change Page </h2>
+	<form id = "testtest" method = "post" action = "/edit/" enctype = "multipart/form-data">
+		<select name="page_id", id="page_id">
+			{% with ''|center:total_pages as range %}
+				{% for _ in range %}
+					<option id="page" selected="{{ forloop.counter }}" value="{{ forloop.counter }}">{{ forloop.counter }}</option>
+				{% endfor %}
+			{% endwith %}
+    </select>
 
-    </form>
+		<script>
+      $( "select" )
+        .change(function() {
+					var foo = $('#page_id').val();
+					$('#testtest').attr("action", "/edit/page-" + foo + "/");
+        })
+      .trigger( "change" );
+		</script>
+		<input type = "submit">
+	</form>
 
 </body>
 </html>
