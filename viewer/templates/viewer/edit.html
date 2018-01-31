@@ -9,102 +9,70 @@
 	{% if page_number %}
 		var page_number = "{{ page_number }}";
 		var total_pages = "{{ total_pages }}";
-		console.log(page_number);
 	{% endif %}
 </script>
 
-<!-- Script to display image metadata -->
+<!-- Script template to display image metadata -->
 <script id="data_block" type="text/html">
-  <form id="edit_form" method = "post" action = "/updateImage/" enctype = "multipart/form-data">
-	<label>Orientation: </label>
-	<input name="orientation" id="orientation" value={{ item.orientation }}></input>
+	<form id="edit_form" method = "post" action = "/updateImage/" enctype = "multipart/form-data">
+		<label>Orientation: </label>
+		<input name="orientation" id="orientation" value={{ item.orientation }}></input>
 
-	<label>Shape: </label>
-	<input name="shape" id="shape" value="{{ item.shape }}"></input>
+		<label>Shape: </label>
+		<input name="shape" id="shape" value="{{ item.shape }}"></input>
 
-	<label>Alphanumeric: </label>
-	<input name="alphanumeric" id="alphanumeric" value="{{ item.alphanumeric }}"></input>
+		<label>Alphanumeric: </label>
+		<input name="alphanumeric" id="alphanumeric" value="{{ item.alphanumeric }}"></input>
 
-	<label>Color: </label>
-	<input name="color" id="color" value="{{ item.color }}"></input>
+		<label>Color: </label>
+		<input name="color" id="color" value="{{ item.color }}"></input>
 
-	<br></br>
-	<img name = "image" id="image" src="{{ item.image }}"/>
-  <input type = "submit">
-  <br></br>
-  </form>
+		<br></br>
+		<img name = "image" id="image" src="{{ item.image }}"/>
+  		<br></br>
+  		<input type = "submit">
+  	</form>
 </script>
 
 <body>
-  <h2>Edit Image : Page {{ page_number }}</h2>
+  	<h2>Edit Image : Page {{ page_number }}</h2>
 
-		<div id="ImageData" style="margin: 100px"></div>
-    <script>
-    {% for item in data %}
-    var pk = {{ item.pk }};
-    var div = document.createElement('div');
-    div.innerHTML = document.getElementById('data_block').innerHTML;
-    $('#ImageData').append(div);
-    $('#edit_form').attr('id','edit_form'+pk);
-    $('#edit_form'+pk).attr('action', "/updateImage/id-" + pk + "/");
-    $('#orientation').attr('id','orientation'+pk);
-    $('#shape').attr('id', 'shape'+pk);
-    $('#alphanumeric').attr('id','alphanumeric'+pk);
-    $('#color').attr('id','color'+pk);
-    $('#image').attr('id','image'+pk);
-    $("#orientation"+pk).val("{{ item.orientation }}");
-    $("#shape"+pk).val("{{ item.shape }}");
-    $("#alphanumeric"+pk).val("{{ item.alphanumeric }}");
-    $("#color"+pk).val("{{ item.color }}");
-    document.getElementById("image"+pk).src = "{{item.image}}";
-    {% endfor %}
-    </script>
+	<div id="ImageData" style="margin: 100px"></div>
+	<script>
+		{% for item in data %}
+			// Set pk from item
+			var pk = {{ item.pk }};
 
-  <!--
-  <form method = "post" action = "/updateImage/" enctype = "multipart/form-data">
+			// Append a new image data field
+			var div = document.createElement('div');
+			div.innerHTML = document.getElementById('data_block').innerHTML;
+			$('#ImageData').append(div);
 
-		<div id="ImageData" style="margin: 100px"></div>
+			// Modify id's and action to make unique
+			$('#edit_form').attr('id','edit_form'+pk);
+			$('#edit_form'+pk).attr('action', "/updateImage/id-" + pk + "/");
+			$('#orientation').attr('id','orientation'+pk);
+			$('#shape').attr('id', 'shape'+pk);
+			$('#alphanumeric').attr('id','alphanumeric'+pk);
+			$('#color').attr('id','color'+pk);
+			$('#image').attr('id','image'+pk);
 
-    <select name="item_id", id="item_id">
-      {% for item in data %}
-        <option selected="selected" value="{{ item.pk }}">{{ item.pk }}</option>
-      {% endfor %}
-    </select>
-
-    <script>
-      $( "select" )
-        .change(function() {
-          {% for item in data %}
-
-          	var something = $('#item_id').val();
-            var pk = {{ item.pk }};
-
-						if(true){
-              var div = document.createElement('div');
-							div.innerHTML = document.getElementById('data_block').innerHTML;
-							$('#ImageData').append(div);
-              $('#orientation').attr('id','orientation'+pk);
-              $('#shape').attr('id', 'shape'+pk);
-              $('#alphanumeric').attr('id','shape'+pk);
-              $('#color').attr('id','color'+pk);
-              $('#image').attr('id','image'+pk);
-              $("#orientation"+pk).val("{{ item.orientation }}");
-              $("#shape"+pk).val("{{ item.shape }}");
-              $("#alphanumeric"+pk).val("{{ item.alphanumeric }}");
-              $("#color"+pk).val("{{ item.color }}");
-              document.getElementById("image"+pk).src = "{{item.image}}";
-            }
-          {% endfor %}
-        })
-      .trigger( "change" );
-    </script>
-    <input type = "submit">
-  </form>
-  -->
+			// Set fields
+			$("#orientation"+pk).val("{{ item.orientation }}");
+			$("#shape"+pk).val("{{ item.shape }}");
+			$("#alphanumeric"+pk).val("{{ item.alphanumeric }}");
+			$("#color"+pk).val("{{ item.color }}");
+			document.getElementById("image"+pk).src = "{{item.image}}";
+		{% endfor %}
+	</script>
 
 	<br> --------------------------------------------------- </br>
+
+	<!-- Select page and submit to change ...
+			NOT FINAL, switching to normal page switching mechanism soon -->
 	<h2> Change Page </h2>
-	<form id = "testtest" method = "post" action = "/edit/" enctype = "multipart/form-data">
+
+	<form id = "change_page" method = "post" action = "/edit/" enctype = "multipart/form-data">
 		<select name="page_id", id="page_id">
 			{% with ''|center:total_pages as range %}
 				{% for _ in range %}
@@ -113,15 +81,14 @@
 			{% endwith %}
     </select>
 
-		<script>
-      $( "select" )
-        .change(function() {
-					var foo = $('#page_id').val();
-					$('#testtest').attr("action", "/edit/page-" + foo + "/");
+	<script>
+		$( "select" ).change(function() {
+			var foo = $('#page_id').val();
+			$('#change_page').attr("action", "/edit/page-" + foo + "/");
         })
-      .trigger( "change" );
-		</script>
-		<input type = "submit">
+      	.trigger( "change" );
+	</script>
+	<input type = "submit">
 	</form>
 
 </body>

@@ -28,8 +28,6 @@ def edit(request, page_number):
 	else:
 		page_number = (int)(page_number)
 
-	print(page_number)
-
 	objects = Target.objects.order_by('pk')
 	objects_paged = Paginator(objects, PAGE_SIZE)
 	page = objects_paged.page(page_number).object_list
