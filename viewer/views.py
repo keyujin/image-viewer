@@ -21,7 +21,7 @@ def interop(request):
     data = Target.objects.order_by('pk')
     return render(request, "viewer/interop.html", {'data': data})
 
-@api_view(['POST'])
+@api_view(['POST','GET'])
 def edit(request, page_number):
 	if page_number is None:
 		page_number = (int)(1)
@@ -35,12 +35,6 @@ def edit(request, page_number):
 	page = objects_paged.page(page_number).object_list
 	total_pages = objects_paged.num_pages
 
-	''' LEGACY
-	starting_pk = (page_number-1)*PAGE_SIZE
-	orig_data = Target.objects.order_by('pk')
-	data = orig_data[starting_pk:starting_pk+PAGE_SIZE]
-	total_pages = math.ceil(orig_data.count()/PAGE_SIZE)
-	'''
 	return render(request, "viewer/edit.html", {'data': page, 'page_number':page_number, 'total_pages':total_pages})
 
 @api_view(['POST'])
@@ -64,9 +58,9 @@ def submitToInterop(request):
 
     return Response(status=status.HTTP_200_OK)
 
-@api_view(['POST'])
-def updateImage(request):
-    obj = Target.objects.get(pk=request.data.get("item_id"))
+@api_view(['POST','GET'])
+def updateImage(request, item_id):
+    obj = Target.objects.get(pk=item_id)
     obj.orientation = request.data.get("orientation")
     obj.shape = request.data.get("shape")
     obj.alphanumeric = request.data.get("alphanumeric")
