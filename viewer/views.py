@@ -66,3 +66,7 @@ def updateImage(request, item_id):
     obj.save()
 
     return Response(status=status.HTTP_200_OK)
+
+@api_view(['POST','GET'])
+def deleteTarget(request, item_id):
+	return Response(status=status.HTTP_200_OK)

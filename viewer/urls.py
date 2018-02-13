@@ -9,4 +9,5 @@ urlpatterns = [
     url(r'^interop/', interop, name="interop"),
     url(r'^edit/(?:page-(?P<page_number>\d+)/)?$', edit, name='edit'),
     url(r'^updateImage/(?:id-(?P<item_id>\d+)/)?$', updateImage, name='updateImage'),
+	url(r'^deleteTarget/(?:id-(?P<item_id>\d+)/)?$', deleteTarget, name='deleteTarget'),
 ]

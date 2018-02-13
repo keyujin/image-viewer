@@ -2,6 +2,10 @@
 <html>
 <head>
   <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+	<link rel="stylesheet" href="/static/viewer/croppie.css">
+	<script src="/static/viewer/croppie.min.js"></script>
+	<script src="/static/viewer/js.cookie.js"></script>
 </head>
 
 <!-- Grab passed variables -->
@@ -14,24 +18,28 @@
 
 <!-- Script template to display image metadata -->
 <script id="data_block" type="text/html">
-	<form id="edit_form" method = "post" action = "/updateImage/" enctype = "multipart/form-data">
-		<label>Orientation: </label>
-		<input name="orientation" id="orientation" value={{ item.orientation }}></input>
 
-		<label>Shape: </label>
-		<input name="shape" id="shape" value="{{ item.shape }}"></input>
+	<label>Orientation: </label>
+	<input name="orientation" id="orientation" value={{ item.orientation }}></input>
 
-		<label>Alphanumeric: </label>
-		<input name="alphanumeric" id="alphanumeric" value="{{ item.alphanumeric }}"></input>
+	<label>Shape: </label>
+	<input name="shape" id="shape" value="{{ item.shape }}"></input>
 
-		<label>Color: </label>
-		<input name="color" id="color" value="{{ item.color }}"></input>
+	<label>Alphanumeric: </label>
+	<input name="alphanumeric" id="alphanumeric" value="{{ item.alphanumeric }}"></input>
 
-		<br></br>
-		<img name = "image" id="image" src="{{ item.image }}"/>
-  		<br></br>
-  		<input type = "submit">
-  	</form>
+	<label>Color: </label>
+	<input name="color" id="color" value="{{ item.color }}"></input>
+
+	<br></br>
+	<div class="viewedImg"></div>
+  <br></br>
+	<button id="edit_button">Edit</button>
+	<!--
+	<form id="delete_form" method = "post" action = "/deleteTarget/" enctype = "multipart/form-data">
+		<input type = "submit" value = "Delete">
+	</form>
+	-->
 </script>
 
 <body>
@@ -48,23 +56,52 @@
 			div.innerHTML = document.getElementById('data_block').innerHTML;
 			$('#ImageData').append(div);
 
-			// Modify id's and action to make unique
+			/*	Modify id's and action to make unique	*/
+
+			// Change each edit form to be unique and pass a different pk to updateImage
 			$('#edit_form').attr('id','edit_form'+pk);
 			$('#edit_form'+pk).attr('action', "/updateImage/id-" + pk + "/");
+
+			// Do the same with delete form
+			$('#delete_form').attr('id','delete_form'+pk);
+			$('#delete_form'+pk).attr('action',"/deleteTarget/id-" + pk + "/");
+
+			// Unique fields for metadata
 			$('#orientation').attr('id','orientation'+pk);
 			$('#shape').attr('id', 'shape'+pk);
 			$('#alphanumeric').attr('id','alphanumeric'+pk);
 			$('#color').attr('id','color'+pk);
 			$('#image').attr('id','image'+pk);
 
-			// Set fields
+			// Set fields to their values
 			$("#orientation"+pk).val("{{ item.orientation }}");
 			$("#shape"+pk).val("{{ item.shape }}");
 			$("#alphanumeric"+pk).val("{{ item.alphanumeric }}");
 			$("#color"+pk).val("{{ item.color }}");
-			document.getElementById("image"+pk).src = "{{item.image}}";
+
+			var basic = $('.viewedImg').croppie({
+					viewport: {
+							width: 500,
+							height: 500
+					},
+					enableOrientation: true,
+					enableResize: true
+			});
+
+			basic.croppie('bind', {
+					var test = JSON.stringify("{{item.image}}");
+					url: encodeURIComponent(test),
+			});
+
+
+			//document.getElementById("image"+pk).src = "{{item.image}}";
 		{% endfor %}
 	</script>
+
+	<br> --------------------------------------------------- </br>
+
+	<h2> View X Targets </h2>
+
 
 	<br> --------------------------------------------------- </br>
 
