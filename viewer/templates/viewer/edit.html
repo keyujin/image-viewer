@@ -1,11 +1,29 @@
 <!doctype html>
 <html>
 <head>
-  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-
-	<link rel="stylesheet" href="/static/viewer/croppie.css">
-	<script src="/static/viewer/croppie.min.js"></script>
+	<!-- Import JavaScript -->
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 	<script src="/static/viewer/js.cookie.js"></script>
+	<link  href="/static/viewer/cropper.css" rel="stylesheet">
+	<script src="/static/viewer/cropper.js"></script>
+
+	<!-- TODO: move to CSS and import -->
+	<style>
+		img{
+			max-width: 100%;
+		}
+		.CropperImage{
+			height: 500px;
+			width: 500px;
+			overflow: hidden;
+			float: left;
+			clear: left;
+		}
+		label{
+    		display: block; /* add this */
+    		padding-top: 5px;
+		}
+	</style>
 </head>
 
 <!-- Grab passed variables -->
@@ -18,34 +36,35 @@
 
 <!-- Script template to display image metadata -->
 <script id="data_block" type="text/html">
+	<!-- Image -->
+	<div class="CropperImage">
+		<img id="viewedImg" src=""/>
+	</div>
 
+	<!-- Image metadata -->
+	<div class="MetaFields">
 	<label>Orientation: </label>
-	<input name="orientation" id="orientation" value={{ item.orientation }}></input>
+	<input name="orientation" id="orientation" value={{ item.orientation }}></input><br></br>
 
 	<label>Shape: </label>
-	<input name="shape" id="shape" value="{{ item.shape }}"></input>
+	<input name="shape" id="shape" value="{{ item.shape }}"></input><br></br>
 
 	<label>Alphanumeric: </label>
-	<input name="alphanumeric" id="alphanumeric" value="{{ item.alphanumeric }}"></input>
+	<input name="alphanumeric" id="alphanumeric" value="{{ item.alphanumeric }}"></input><br></br>
 
 	<label>Color: </label>
-	<input name="color" id="color" value="{{ item.color }}"></input>
+	<input name="color" id="color" value="{{ item.color }}"></input><br></br>
 
-	<br></br>
-	<div class="viewedImg"></div>
-  <br></br>
-	<button id="edit_button">Edit</button>
-	<!--
-	<form id="delete_form" method = "post" action = "/deleteTarget/" enctype = "multipart/form-data">
-		<input type = "submit" value = "Delete">
-	</form>
-	-->
+	<!-- Submit changes -->
+	<button class="MetaLabel" id="edit_button">Edit</button>
+	</div>
+	<div style="clear:both;"><br><hr></hr></br></div>
 </script>
 
 <body>
-  	<h2>Edit Image : Page {{ page_number }}</h2>
+  	<h2>Image Database | Page {{ page_number }}</h2>
 
-	<div id="ImageData" style="margin: 100px"></div>
+	<div id="ImageData" style="margin: 35px"></div>
 	<script>
 		{% for item in data %}
 			// Set pk from item
@@ -55,16 +74,6 @@
 			var div = document.createElement('div');
 			div.innerHTML = document.getElementById('data_block').innerHTML;
 			$('#ImageData').append(div);
-
-			/*	Modify id's and action to make unique	*/
-
-			// Change each edit form to be unique and pass a different pk to updateImage
-			$('#edit_form').attr('id','edit_form'+pk);
-			$('#edit_form'+pk).attr('action', "/updateImage/id-" + pk + "/");
-
-			// Do the same with delete form
-			$('#delete_form').attr('id','delete_form'+pk);
-			$('#delete_form'+pk).attr('action',"/deleteTarget/id-" + pk + "/");
 
 			// Unique fields for metadata
 			$('#orientation').attr('id','orientation'+pk);
@@ -79,31 +88,25 @@
 			$("#alphanumeric"+pk).val("{{ item.alphanumeric }}");
 			$("#color"+pk).val("{{ item.color }}");
 
-			var basic = $('.viewedImg').croppie({
-					viewport: {
-							width: 500,
-							height: 500
-					},
-					enableOrientation: true,
-					enableResize: true
+			$("#viewedImg").attr('id','viewedImg'+pk);
+			$("#viewedImg"+pk).attr('src',"{{item.image}}");
+
+			var image_foo = document.getElementById('viewedImg'+pk);
+			var cropper = new Cropper(image_foo,{
+				aspectRatio: 1,
+				viewMode: 2,
+				dragMode: 'crop',
+				responsive: false,
+
+  				crop: function(e) {
+
+  				}
 			});
-
-			basic.croppie('bind', {
-					var test = JSON.stringify("{{item.image}}");
-					url: encodeURIComponent(test),
-			});
-
-
-			//document.getElementById("image"+pk).src = "{{item.image}}";
 		{% endfor %}
 	</script>
 
-	<br> --------------------------------------------------- </br>
-
 	<h2> View X Targets </h2>
-
-
-	<br> --------------------------------------------------- </br>
+	<hr></hr>
 
 	<!-- Select page and submit to change ...
 			NOT FINAL, switching to normal page switching mechanism soon -->

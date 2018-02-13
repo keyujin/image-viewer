@@ -36,8 +36,8 @@
                 width: 500,
                 height: 500
             },
-            enableOrientation: true,
-            enableResize: true
+            //enableOrientation: true,
+            //enableResize: true
         });
 
         basic.croppie('bind', {
@@ -66,7 +66,7 @@
                 document.getElementById('submittedImgs').append(img);
 
                 console.log(blob);
-                
+
                 var fd = new FormData()
                 fd.append('orientation', $("#orientation").val());
                 fd.append('shape', $("#shape").val());
