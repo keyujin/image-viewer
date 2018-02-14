@@ -6,24 +6,7 @@
 	<script src="/static/viewer/js.cookie.js"></script>
 	<link  href="/static/viewer/cropper.css" rel="stylesheet">
 	<script src="/static/viewer/cropper.js"></script>
-
-	<!-- TODO: move to CSS and import -->
-	<style>
-		img{
-			max-width: 100%;
-		}
-		.CropperImage{
-			height: 500px;
-			width: 500px;
-			overflow: hidden;
-			float: left;
-			clear: left;
-		}
-		label{
-    		display: block; /* add this */
-    		padding-top: 5px;
-		}
-	</style>
+	<link  href="/static/viewer/style.css" rel="stylesheet">
 </head>
 
 <!-- Grab passed variables -->
@@ -36,29 +19,45 @@
 
 <!-- Script template to display image metadata -->
 <script id="data_block" type="text/html">
-	<!-- Image -->
-	<div class="CropperImage">
-		<img id="viewedImg" src=""/>
-	</div>
 
-	<!-- Image metadata -->
-	<div class="MetaFields">
-	<label>Orientation: </label>
-	<input name="orientation" id="orientation" value={{ item.orientation }}></input><br></br>
-
-	<label>Shape: </label>
-	<input name="shape" id="shape" value="{{ item.shape }}"></input><br></br>
-
-	<label>Alphanumeric: </label>
-	<input name="alphanumeric" id="alphanumeric" value="{{ item.alphanumeric }}"></input><br></br>
-
-	<label>Color: </label>
-	<input name="color" id="color" value="{{ item.color }}"></input><br></br>
-
-	<!-- Submit changes -->
-	<button class="MetaLabel" id="edit_button">Edit</button>
-	</div>
-	<div style="clear:both;"><br><hr></hr></br></div>
+	<table>
+	    <tr>
+	        <!-- Image -->
+	        <td>
+	            <div class="CropperImage">
+		            <img id="viewedImg" src=""/>
+	            </div>
+	        </td>
+	
+	        <!-- Image metadata -->
+	        <td>
+	            <div class="MetaFields">
+                    <table class="paddingBetweenCols">
+                        <tr>
+                            <td><label>Orientation: </label></td>
+                            <td><input name="orientation" id="orientation" value={{ item.orientation }}></input><br></br></td>
+                        </tr>
+                        <tr>
+                            <td><label>Shape: </label></td>
+                            <td><input name="shape" id="shape" value="{{ item.shape }}"></input><br></br></td>
+                        </tr>
+                        <tr>
+                            <td><label>Alphanumeric: </label></td>
+                            <td><input name="alphanumeric" id="alphanumeric" value="{{ item.alphanumeric }}"></input><br></br></td>
+                        </tr>
+                        <tr>
+                            <td><label>Color: </label></td>
+                            <td><input name="color" id="color" value="{{ item.color }}"></input><br></br></td>
+                        </tr>
+                    </table>
+                <!-- Submit changes -->
+                <button class="MetaLabel" id="edit_button">Edit</button>
+                </div>
+	        </td>
+        </tr>
+        <div style="clear:both;"><br><hr></hr></br></div>
+	</table>
+	
 </script>
 
 <body>

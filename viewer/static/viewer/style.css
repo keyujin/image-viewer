@@ -1,0 +1,19 @@
+img {
+	max-width: 100%;
+}
+
+.CropperImage {
+	height: 400px;
+	width: 400px;
+	overflow: hidden;
+	float: left;
+	clear: left;
+}
+
+div.MetaFields {
+	padding-left: 50px;
+}
+
+.paddingBetweenCols td {
+    padding:0 30px 0 0;
+}
