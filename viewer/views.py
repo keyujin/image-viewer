@@ -58,14 +58,14 @@ def submitToInterop(request):
 
 @api_view(['POST','GET'])
 def updateImage(request, item_id):
-    obj = Target.objects.get(pk=item_id)
-    obj.orientation = request.data.get("orientation")
-    obj.shape = request.data.get("shape")
-    obj.alphanumeric = request.data.get("alphanumeric")
-    obj.color = request.data.get("color")
-    obj.save()
-
-    return Response(status=status.HTTP_200_OK)
+	obj = Target.objects.get(pk=item_id)
+	obj.orientation = request.data.get("orientation")
+	obj.shape = request.data.get("shape")
+	obj.alphanumeric = request.data.get("alphanumeric")
+	obj.color = request.data.get("color")
+	obj.image = request.data.get("image")
+	obj.save()
+	return Response(status=status.HTTP_200_OK)
 
 @api_view(['POST','GET'])
 def deleteTarget(request, item_id):

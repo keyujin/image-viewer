@@ -17,47 +17,53 @@
 	{% endif %}
 </script>
 
+<script id="test_block" type="text/html">
+	<img id="testimg" src=""></img>
+</script>
+
 <!-- Script template to display image metadata -->
 <script id="data_block" type="text/html">
-
+	<form>
 	<table>
-	    <tr>
-	        <!-- Image -->
-	        <td>
-	            <div class="CropperImage">
-		            <img id="viewedImg" src=""/>
-	            </div>
+
+		<tr>
+			<!-- CropperJs Viewer -->
+			<td>
+				<div class="CropperImage"><img id="viewedImg" src=""/></div>
 	        </td>
-	
+
 	        <!-- Image metadata -->
 	        <td>
 	            <div class="MetaFields">
-                    <table class="paddingBetweenCols">
-                        <tr>
-                            <td><label>Orientation: </label></td>
-                            <td><input name="orientation" id="orientation" value={{ item.orientation }}></input><br></br></td>
-                        </tr>
-                        <tr>
-                            <td><label>Shape: </label></td>
-                            <td><input name="shape" id="shape" value="{{ item.shape }}"></input><br></br></td>
-                        </tr>
-                        <tr>
-                            <td><label>Alphanumeric: </label></td>
-                            <td><input name="alphanumeric" id="alphanumeric" value="{{ item.alphanumeric }}"></input><br></br></td>
-                        </tr>
-                        <tr>
-                            <td><label>Color: </label></td>
-                            <td><input name="color" id="color" value="{{ item.color }}"></input><br></br></td>
-                        </tr>
-                    </table>
-                <!-- Submit changes -->
-                <button class="MetaLabel" id="edit_button">Edit</button>
-                </div>
+                <table class="paddingBetweenCols">
+                    <tr>
+                        <td><label>Orientation: </label></td>
+                        <td><input name="orientation" id="orientation" value={{ item.orientation }}></input><br></br></td>
+                    </tr>
+                    <tr>
+                        <td><label>Shape: </label></td>
+                        <td><input name="shape" id="shape" value="{{ item.shape }}"></input><br></br></td>
+                    </tr>
+                    <tr>
+                        <td><label>Alphanumeric: </label></td>
+                        <td><input name="alphanumeric" id="alphanumeric" value="{{ item.alphanumeric }}"></input><br></br></td>
+                    </tr>
+                    <tr>
+                        <td><label>Color: </label></td>
+                        <td><input name="color" id="color" value="{{ item.color }}"></input><br></br></td>
+                    </tr>
+                </table>
+
+            <!-- Submit changes -->
+            	<input type="submit" value="Go">
+            	</div>
 	        </td>
         </tr>
-        <div style="clear:both;"><br><hr></hr></br></div>
+
+
 	</table>
-	
+	</form>
+	<div style="clear:both;"><br><hr></hr></br></div>
 </script>
 
 <body>
@@ -65,9 +71,24 @@
 
 	<div id="ImageData" style="margin: 35px"></div>
 	<script>
+
+		var csrftoken = Cookies.get('csrftoken');
+
+		function csrfSafeMethod(method){
+			return(/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+		}
+
+		$.ajaxSetup({beforeSend: function(xhr, settings){
+			if(!csrfSafeMethod(settings.type) && !this.crossDomain){
+				xhr.setRequestHeader("X-CSRFToken", csrftoken);
+				}
+			}
+		});
+
 		{% for item in data %}
 			// Set pk from item
 			var pk = {{ item.pk }};
+			console.log(pk);
 
 			// Append a new image data field
 			var div = document.createElement('div');
@@ -75,6 +96,7 @@
 			$('#ImageData').append(div);
 
 			// Unique fields for metadata
+
 			$('#orientation').attr('id','orientation'+pk);
 			$('#shape').attr('id', 'shape'+pk);
 			$('#alphanumeric').attr('id','alphanumeric'+pk);
@@ -89,9 +111,11 @@
 
 			$("#viewedImg").attr('id','viewedImg'+pk);
 			$("#viewedImg"+pk).attr('src',"{{item.image}}");
+			$('#save_edit').attr('id','save_edit'+pk);
+			$('#save_edit').attr('name',pk);
 
 			var image_foo = document.getElementById('viewedImg'+pk);
-			var cropper = new Cropper(image_foo,{
+			$('#viewedImg'+pk).cropper({
 				aspectRatio: 1,
 				viewMode: 2,
 				dragMode: 'crop',
@@ -101,6 +125,95 @@
 
   				}
 			});
+
+			$(function () {
+    			$('form').on('submit', function (e) {
+
+					e.preventDefault();
+					e.stopImmediatePropagation();
+					console.log("HI");
+					var form = $(this).serializeArray();
+					console.log(form);
+					console.log(form.length);
+					console.log(form[3].value);
+					var pkminus = pk-1;
+					$('#viewedImg' + pkminus).cropper().getCroppedCanvas().toBlob(function(blob){
+						var source;
+						var reader = new FileReader();
+						reader.readAsDataURL(blob);
+						reader.onloadend = function() {
+						source = reader.result;
+						var img = document.createElement('img');
+						img.src = source;
+
+						var div2 = document.createElement('div');
+						div2.innerHTML = document.getElementById('test_block').innerHTML;
+
+
+						document.getElementById('change_page').append(div2);
+						$("#testimg").attr('src',source);
+						}
+						/*
+						console.log(source);
+						var img = document.createElement('img');
+						img.src = source;
+						document.getElementById('change_page').append(source);
+						*/
+					})
+
+
+					/*
+        			$.ajax({
+            			type: 'post',
+            			url: 'addfr.jsp',
+            			data: $(this).serialize(),
+            			success: function () {
+                			//location.reload();
+            		}
+        			});
+					*/
+    			});
+			});
+
+			/*
+			$("#save_edit"+pk).on('click', function(){
+					cropper.getCroppedCanvas().toBlob(function (blob) {
+
+						var source;
+						var reader = new FileReader();
+ 						reader.readAsDataURL(blob);
+ 						reader.onloadend = function() {
+     					source = reader.result;
+						}
+
+						var img = document.createElement('img');
+						img.src = source;
+						document.getElementById('change_page').append(source);
+
+						console.log("HI");
+						var foo_test = document.getElementById(this.form).elements["color"];
+						console.log(foo_test);
+
+							var fd = new FormData()
+							fd.append('orientation', $("#orientation"+pk).val());
+							fd.append('shape', $("#shape"+pk).val());
+							fd.append('alphanumeric', $("#alphanumeric"+pk).val());
+							fd.append('color', $("#color"+pk).val());
+							fd.append('image', source );
+							$.ajax({
+									type: "POST",
+									url: "/updateImage/id-" + pk + "/",
+									data: fd,
+									processData: false,
+									contentType: false
+							}).done(function(){
+								 console.log(source);
+							});
+
+					})
+
+			});
+		*/
 		{% endfor %}
 	</script>
 
