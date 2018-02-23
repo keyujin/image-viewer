@@ -1,11 +1,18 @@
 <!doctype html>
 <html>
 <head>
-	<!-- Import JavaScript -->
+	<!-- HTML Metadata -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<!-- Import JavaScript/jQuery -->
 	<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 	<script src="/static/viewer/js.cookie.js"></script>
+
+	<!-- Import Cropper @fengyuanchen-->
 	<link  href="/static/viewer/cropper.css" rel="stylesheet">
 	<script src="/static/viewer/cropper.js"></script>
+
+	<!-- Import CSS -->
 	<link  href="/static/viewer/style.css" rel="stylesheet">
 </head>
 
@@ -17,59 +24,65 @@
 	{% endif %}
 </script>
 
-<script id="test_block" type="text/html">
-	<img id="testimg" src=""></img>
-</script>
-
 <!-- Script template to display image metadata -->
 <script id="data_block" type="text/html">
+	<hr></hr>
 	<form>
 	<table>
 
 		<tr>
-			<!-- CropperJs Viewer -->
+			<!-- Image Viewer -->
 			<td>
-				<div class="CropperImage"><img id="viewedImg" src=""/></div>
+				<div class="ImagePort"><img id="viewedImg" src=""/></div>
 	        </td>
 
 	        <!-- Image metadata -->
 	        <td>
-	            <div class="MetaFields">
+	            <div class="ImageMeta">
                 <table class="paddingBetweenCols">
                     <tr>
                         <td><label>Orientation: </label></td>
-                        <td><input name="orientation" id="orientation" value={{ item.orientation }}></input><br></br></td>
+                        <td><input name="orientation" id="orientation" value={{ item.orientation }}></input></td>
                     </tr>
                     <tr>
                         <td><label>Shape: </label></td>
-                        <td><input name="shape" id="shape" value="{{ item.shape }}"></input><br></br></td>
+                        <td><input name="shape" id="shape" value="{{ item.shape }}"></input></td>
                     </tr>
                     <tr>
                         <td><label>Alphanumeric: </label></td>
-                        <td><input name="alphanumeric" id="alphanumeric" value="{{ item.alphanumeric }}"></input><br></br></td>
+                        <td><input name="alphanumeric" id="alphanumeric" value="{{ item.alphanumeric }}"></input></td>
                     </tr>
                     <tr>
                         <td><label>Color: </label></td>
-                        <td><input name="color" id="color" value="{{ item.color }}"></input><br></br></td>
+                        <td><input name="color" id="color" value="{{ item.color }}"></input></td>
                     </tr>
+
                 </table>
 
-            <!-- Submit changes -->
+            	<!-- Submit changes -->
             	<input type="submit" value="Go">
             	</div>
 	        </td>
         </tr>
-
-
 	</table>
 	</form>
-	<div style="clear:both;"><br><hr></hr></br></div>
 </script>
 
 <body>
   	<h2>Image Database | Page {{ page_number }}</h2>
 
+	<div id="myModal" class="modal">
+
+  		<span class="close">&times;</span>
+		<div>
+  		<img class="modal-content" id="myModal_img">
+		</div>
+  		<div id="caption"></div>
+	</div>
+
+
 	<div id="ImageData" style="margin: 35px"></div>
+
 	<script>
 
 		var csrftoken = Cookies.get('csrftoken');
@@ -114,107 +127,35 @@
 			$('#save_edit').attr('id','save_edit'+pk);
 			$('#save_edit').attr('name',pk);
 
-			var image_foo = document.getElementById('viewedImg'+pk);
-			$('#viewedImg'+pk).cropper({
-				aspectRatio: 1,
-				viewMode: 2,
-				dragMode: 'crop',
-				responsive: false,
+			console.log("HI" + pk);
 
-  				crop: function(e) {
-
-  				}
-			});
-
-			$(function () {
-    			$('form').on('submit', function (e) {
-
-					e.preventDefault();
-					e.stopImmediatePropagation();
-					console.log("HI");
-					var form = $(this).serializeArray();
-					console.log(form);
-					console.log(form.length);
-					console.log(form[3].value);
-					var pkminus = pk-1;
-					$('#viewedImg' + pkminus).cropper().getCroppedCanvas().toBlob(function(blob){
-						var source;
-						var reader = new FileReader();
-						reader.readAsDataURL(blob);
-						reader.onloadend = function() {
-						source = reader.result;
-						var img = document.createElement('img');
-						img.src = source;
-
-						var div2 = document.createElement('div');
-						div2.innerHTML = document.getElementById('test_block').innerHTML;
+			$("#viewedImg"+pk).click(function(){
+				$('#myModal_img').attr('src', "{{item.image}}");
+				console.log("Step 1");
 
 
-						document.getElementById('change_page').append(div2);
-						$("#testimg").attr('src',source);
-						}
-						/*
-						console.log(source);
-						var img = document.createElement('img');
-						img.src = source;
-						document.getElementById('change_page').append(source);
-						*/
-					})
 
+				$('#myModal').show();
+				console.log("Step 2");
+				$("#myModal_img").cropper({
+					aspectRatio: 5/5,
+					crop: function(e){
+						console.log("CROPPER");
+					}
 
-					/*
-        			$.ajax({
-            			type: 'post',
-            			url: 'addfr.jsp',
-            			data: $(this).serialize(),
-            			success: function () {
-                			//location.reload();
-            		}
-        			});
-					*/
-    			});
-			});
-
-			/*
-			$("#save_edit"+pk).on('click', function(){
-					cropper.getCroppedCanvas().toBlob(function (blob) {
-
-						var source;
-						var reader = new FileReader();
- 						reader.readAsDataURL(blob);
- 						reader.onloadend = function() {
-     					source = reader.result;
-						}
-
-						var img = document.createElement('img');
-						img.src = source;
-						document.getElementById('change_page').append(source);
-
-						console.log("HI");
-						var foo_test = document.getElementById(this.form).elements["color"];
-						console.log(foo_test);
-
-							var fd = new FormData()
-							fd.append('orientation', $("#orientation"+pk).val());
-							fd.append('shape', $("#shape"+pk).val());
-							fd.append('alphanumeric', $("#alphanumeric"+pk).val());
-							fd.append('color', $("#color"+pk).val());
-							fd.append('image', source );
-							$.ajax({
-									type: "POST",
-									url: "/updateImage/id-" + pk + "/",
-									data: fd,
-									processData: false,
-									contentType: false
-							}).done(function(){
-								 console.log(source);
-							});
-
-					})
+				});
 
 			});
-		*/
+			$('.close').click(function(){
+				console.log("HI");
+				$('#myModal').hide();
+			});
+
+
 		{% endfor %}
+
+
+
 	</script>
 
 	<h2> View X Targets </h2>
