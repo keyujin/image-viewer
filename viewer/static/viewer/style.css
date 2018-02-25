@@ -1,39 +1,56 @@
-img {
-	max-width: 100%;
+/* Generic */
+h2 { text-align: center; }
+body { font-family: 'Roboto', Arial, Helvetica, sans-serif; }
+
+/* Important for Cropper to function */
+img { max-width: 100%; }
+
+/* Page selection */
+.pagination {
+	font-family: "Roboto";
+	text-align: center;
+	font-size: 22px;
+	font-weight: bold;
+}
+.link { transition: 0.3s; }
+.link:hover, .link:focus {
+    color: #bbb;
+    text-decoration: none;
+    cursor: pointer;
+}
+a, a:visited, a:hover, a:active {
+	text-decoration: inherit;
+	color: inherit;
 }
 
-.ImagePort {
+.imagePort {
 	height: 250px;
 	width: 250px;
 	overflow: hidden;
-	float: left;
-	clear: left;
-}
-
-div.ImageMeta {
-	padding-left: 30px;
-}
-
-.paddingBetweenCols td {
-    padding:0 30px 5px 0;
-}
-
-#body {font-family: Arial, Helvetica, sans-serif;}
-
-#myModal_img {
-    border-radius: 5px;
+	border-radius: 5px;
     cursor: pointer;
     transition: 0.3s;
 }
+.imagePort:hover {opacity: 0.7;}
 
-#myModal_img:hover {opacity: 0.7;}
+.parentTable{
+	margin: auto;
+}
+.paddedTable {
+	padding-left: 30px
+}
+
+.paddedTable td {
+    padding:0 30px 5px 0;
+}
 
 /* The Modal (background) */
 .modal {
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
     z-index: 1; /* Sit on top */
-    padding-top: 100px; /* Location of the box */
+    padding-top: 50px; /* Location of the box */
+	padding-left: 50px;
     left: 0;
     top: 0;
     width: 100%; /* Full width */
@@ -43,34 +60,54 @@ div.ImageMeta {
     background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
 }
 
-/* Modal Content (image) */
-.modal-content {
-    margin: auto;
-    display: block;
-    width: 80%;
-    max-width: 700px;
-}
-
-/* Caption of Modal Image */
-#caption {
-    margin: auto;
-    display: block;
-    width: 80%;
-    max-width: 700px;
-    text-align: center;
-    color: #ccc;
-    padding: 10px 0;
-    height: 150px;
-}
-
-/* Add Animation */
-.modal-content, #caption {
-    -webkit-animation-name: zoom;
+.cropperContainer{
+	text-align: center;
+	margin: auto;
+	max-width:500px;
+	max-height:500px;
+	-webkit-animation-name: zoom;
     -webkit-animation-duration: 0.6s;
     animation-name: zoom;
     animation-duration: 0.6s;
 }
 
+.cropperContainer img{
+	width: 100%;
+}
+
+.legendBox {
+  float: left;
+  width: 20px;
+  height: 20px;
+  margin: 5px;
+  border: 1px solid rgba(0, 0, 0, .2);
+}
+
+.blue { background: #13b4ff; }
+.red { background: #FF0000; }
+.green { background: #32CD32; }
+
+.formSaver, .formDeleter{
+	background-repeat: no-repeat;
+	background-color: Transparent;
+	cursor:pointer;
+	height: 48px;
+	width: 48px;
+	border: none;
+	opacity: 1;
+	transition: 0.3s;
+}
+.formSaver{
+	background-image: url(save.png);
+}
+.formDeleter{
+	background-image: url(delete.png);
+}
+.formSaver:hover, .formDeleter:hover,
+.formSaver:focus, .formDeleter:focus,{
+    opacity: 0.75;
+    cursor: pointer;
+}
 @-webkit-keyframes zoom {
     from {-webkit-transform:scale(0)}
     to {-webkit-transform:scale(1)}
@@ -80,20 +117,49 @@ div.ImageMeta {
     from {transform:scale(0)}
     to {transform:scale(1)}
 }
-
+.pOption{
+	font-size: 16px;
+    font-weight: normal;
+	font-family: "Roboto";
+    transition: 0.3s;
+}
+.pOption:hover,
+.pOption:focus {
+    color: #bbb;
+    text-decoration: none;
+    cursor: pointer;
+}
 /* The Close Button */
 .close {
-    position: absolute;
-    top: 15px;
-    right: 35px;
     color: #f1f1f1;
-    font-size: 40px;
+    font-size: 20px;
     font-weight: bold;
+	font-family: "Roboto";
     transition: 0.3s;
 }
 
 .close:hover,
 .close:focus {
+    color: #bbb;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#cropperButtons{
+	margin: auto;
+	padding-top: 15px;
+}
+/* The Close Button */
+.accept {
+    color: #f1f1f1;
+    font-size: 20px;
+    font-weight: bold;
+    transition: 0.3s;
+	font-family: "Roboto";
+}
+
+.accept:hover,
+.accept:focus {
     color: #bbb;
     text-decoration: none;
     cursor: pointer;

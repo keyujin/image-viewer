@@ -8,105 +8,146 @@
 	<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 	<script src="/static/viewer/js.cookie.js"></script>
 
-	<!-- Import Cropper @fengyuanchen-->
-	<link  href="/static/viewer/cropper.css" rel="stylesheet">
+	<!-- Import Cropper @fengyuanchen -->
+	<link href="/static/viewer/cropper.css" rel="stylesheet">
 	<script src="/static/viewer/cropper.js"></script>
 
-	<!-- Import CSS -->
-	<link  href="/static/viewer/style.css" rel="stylesheet">
+	<!-- Import Stylin' -->
+	<link href="/static/viewer/style.css" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 </head>
-
-<!-- Grab passed variables -->
-<script>
-	{% if page_number %}
-		var page_number = "{{ page_number }}";
-		var total_pages = "{{ total_pages }}";
-	{% endif %}
-</script>
 
 <!-- Script template to display image metadata -->
 <script id="data_block" type="text/html">
-	<hr></hr>
-	<form>
-	<table>
+	<hr width="50%"></hr>
+	<form><table class="parentTable"><tr>
+		<!-- Image Viewer -->
+		<td>
+			<div><img class="imagePort" id="nullPK" src=""/></div>
+		</td>
+		<!-- Image metadata -->
+		<td>
+			<table class="paddedTable">
+				<tr>
+					<td><label>Orientation: </label></td>
+					<td><input name="orientation" id="orientation" value=""></input></td>
+				</tr>
+				<tr>
+					<td><label>Shape: </label></td>
+					<td><input name="shape" id="shape" value=""></input></td>
+				</tr>
+				<tr>
+					<td><label>Alphanumeric: </label></td>
+                    <td><input name="alphanumeric" id="alphanumeric" value=""></input></td>
+                </tr>
+                <tr>
+                    <td><label>Color: </label></td>
+                    <td><input name="color" id="color" value=""></input></td>
+                </tr>
+				<tr>
+                    <td><input type="hidden" name="data_url" id="data_url" value=""></input></td>
+					<td><input type="hidden" name="key" id="key" value=""></input></td>
+                </tr>
+				<tr>
+					<td></td>
+					<td style="float:right;"><button class="formSaver" value="save" type="submit"/>
+					<button class="formDeleter" value="delete" type="submit"/></td>
+				</tr>
+            </table>
+		</td>
+	</tr></table></form>
+</script>
 
-		<tr>
-			<!-- Image Viewer -->
-			<td>
-				<div class="ImagePort"><img id="viewedImg" src=""/></div>
-	        </td>
+<script>
+	var crop_pk = -1;
+	/* ajax setup */
+	var csrftoken = Cookies.get('csrftoken');
 
-	        <!-- Image metadata -->
-	        <td>
-	            <div class="ImageMeta">
-                <table class="paddingBetweenCols">
-                    <tr>
-                        <td><label>Orientation: </label></td>
-                        <td><input name="orientation" id="orientation" value={{ item.orientation }}></input></td>
-                    </tr>
-                    <tr>
-                        <td><label>Shape: </label></td>
-                        <td><input name="shape" id="shape" value="{{ item.shape }}"></input></td>
-                    </tr>
-                    <tr>
-                        <td><label>Alphanumeric: </label></td>
-                        <td><input name="alphanumeric" id="alphanumeric" value="{{ item.alphanumeric }}"></input></td>
-                    </tr>
-                    <tr>
-                        <td><label>Color: </label></td>
-                        <td><input name="color" id="color" value="{{ item.color }}"></input></td>
-                    </tr>
+	function csrfSafeMethod(method){
+		return(/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+	}
 
-                </table>
+	$.ajaxSetup({beforeSend: function(xhr, settings){
+		if(!csrfSafeMethod(settings.type) && !this.crossDomain){
+			xhr.setRequestHeader("X-CSRFToken", csrftoken);
+			}
+		}
+	});
 
-            	<!-- Submit changes -->
-            	<input type="submit" value="Go">
-            	</div>
-	        </td>
-        </tr>
-	</table>
-	</form>
+	window.onload = function(e){
+		$('.pOption').click(function(e){
+			e.preventDefault();
++			e.stopImmediatePropagation();
+			var sizefd = new FormData();
+			sizefd.append('pageSize', $(e.target).text());
+			$.ajax({
+				type: "POST",
+				url: "/resizePage/",
+				data: sizefd,
+				processData: false,
+				contentType: false
+			}).done(function(){
+				window.location.href = "/edit/";
+			});
+		});
+	}
 </script>
 
 <body>
-  	<h2>Image Database | Page {{ page_number }}</h2>
+  	<h2 id="title">Target Interface</h2>
 
-	<div id="myModal" class="modal">
+	<span class="headerData">
+		<table class="parentTable" name="pageOptions"><tr>
+			<td><span>viewing: </span></td>
+			<td><span class="pOption">5</span></td>
+			<td><span class="pOption">10</span></td>
+			<td><span class="pOption">20</span></td>
+			<td><span class="pOption">50</span></td>
+		<tr></table>
+		<table class="parentTable" name="legend"><tr>
+			<td><div class="legendBox red"></div></td>
+			<td><span>= Manual</span></td>
+			<td><div class="legendBox blue"></div></td>
+			<td><span>= Autonomous</span></td>
+			<td><div class="legendBox green"></div></td>
+			<td><span>= Merged</span></td>
+		<tr></table>
+	</span>
 
-  		<span class="close">&times;</span>
-		<div>
-  		<img class="modal-content" id="myModal_img">
+	<script>
+		var page_options = document.getElementsByClassName('pOption');
+		for(i = 0; i < page_options.length; i++){
+			if(page_options[i].innerText == "{{ page_size }}"){
+				page_options[i].style["font-weight"] = "bold";
+			}
+		}
+	</script>
+
+	<div id="cropper" class="modal">
+		<div class="cropperContainer">
+  			<img id="cropperImage">
 		</div>
-  		<div id="caption"></div>
+
+		<table class="paddedTable" id="cropperButtons"><tr>
+			<td><span class="accept">Accept</span></td>
+  			<td><span class="close">Cancel</span></td>
+		</tr></table>
 	</div>
 
 
-	<div id="ImageData" style="margin: 35px"></div>
+	<div id="imageData" style="margin: 35px"></div>
 
 	<script>
 
-		var csrftoken = Cookies.get('csrftoken');
-
-		function csrfSafeMethod(method){
-			return(/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-		}
-
-		$.ajaxSetup({beforeSend: function(xhr, settings){
-			if(!csrfSafeMethod(settings.type) && !this.crossDomain){
-				xhr.setRequestHeader("X-CSRFToken", csrftoken);
-				}
-			}
-		});
-
+		/* Load images to view */
 		{% for item in data %}
 			// Set pk from item
 			var pk = {{ item.pk }};
-			console.log(pk);
 
 			// Append a new image data field
 			var div = document.createElement('div');
 			div.innerHTML = document.getElementById('data_block').innerHTML;
-			$('#ImageData').append(div);
+			$('#imageData').append(div);
 
 			// Unique fields for metadata
 
@@ -114,75 +155,116 @@
 			$('#shape').attr('id', 'shape'+pk);
 			$('#alphanumeric').attr('id','alphanumeric'+pk);
 			$('#color').attr('id','color'+pk);
-			$('#image').attr('id','image'+pk);
+			$('#data_url').attr('id','data_url'+pk);
+			$('#key').attr('id', 'key'+pk);
 
 			// Set fields to their values
 			$("#orientation"+pk).val("{{ item.orientation }}");
 			$("#shape"+pk).val("{{ item.shape }}");
 			$("#alphanumeric"+pk).val("{{ item.alphanumeric }}");
 			$("#color"+pk).val("{{ item.color }}");
+			$('#data_url'+pk).val("{{ item.image }}");
+			$('#key'+pk).val(pk);
 
-			$("#viewedImg").attr('id','viewedImg'+pk);
-			$("#viewedImg"+pk).attr('src',"{{item.image}}");
-			$('#save_edit').attr('id','save_edit'+pk);
-			$('#save_edit').attr('name',pk);
+			$("#nullPK").attr('id',pk);
+			$("#"+pk).attr('src',"{{item.image}}");
 
-			console.log("HI" + pk);
+			$('#'+pk).css("box-shadow", "0px 0px 20px #FF0000");
 
-			$("#viewedImg"+pk).click(function(){
-				$('#myModal_img').attr('src', "{{item.image}}");
-				console.log("Step 1");
-
-
-
-				$('#myModal').show();
-				console.log("Step 2");
-				$("#myModal_img").cropper({
-					aspectRatio: 5/5,
-					crop: function(e){
-						console.log("CROPPER");
-					}
-
-				});
-
+			$("#"+pk).click(function(){
+				$('#cropper').show();
+				$('#cropperImage').cropper('replace', $(this).attr('src'));
+				crop_pk = $(this).attr('id');
 			});
-			$('.close').click(function(){
-				console.log("HI");
-				$('#myModal').hide();
+
+			$(function(){
+				$('form').on('submit', function(e){
+					e.preventDefault();
++					e.stopImmediatePropagation();
+					var action = $(document.activeElement).val();
+					var form = $(this).serializeArray();
+					console.log(form);
+
+					if(action == 'save'){
+						var fd = new FormData();
+		                fd.append('orientation', form[0].value);
+		                fd.append('shape', form[1].value);
+		                fd.append('alphanumeric', form[2].value);
+		                fd.append('color', form[3].value);
+		                fd.append('image', form[4].value);
+		                $.ajax({
+		                    type: "POST",
+		                    url: "/updateImage/id-"+form[5].value+"/",
+		                    data: fd,
+		                    processData: false,
+		                    contentType: false
+		                }).done(function(){
+		                });
+					}else if(action == 'delete'){
+						var fd = new FormData();
+						fd.append('key', form[5].value);
+						$.ajax({
+		                    type: "POST",
+		                    url: "/deleteTarget/",
+							data: fd,
+		                    processData: false,
+		                    contentType: false
+		                }).done(function(){
+							window.location.reload(true);
+		                });
+					}else{
+						// Something bad happened ...
+					}
+				});
 			});
 
 
 		{% endfor %}
 
+		$("#cropperImage").cropper({
+			aspectRatio: 1,
+			viewMode: 1,
+			autoCropArea: 1,
+			responsive: false,
+			movable: false,
+        	zoomable: false,
+        	rotatable: false,
+        	scalable: false,
+			crop: function(e){}
+		});
+		$('.close').click(function(){
+			$('#cropper').hide();
+		});
 
+		$('.accept').click(function(){
+			var cropped_data_url = $('#cropperImage').cropper('getCroppedCanvas').toDataURL();
+			$("#"+crop_pk).attr('src', cropped_data_url);
+			$('#data_url'+crop_pk).attr('value', cropped_data_url);
+			$('#cropper').hide();
+		});
 
 	</script>
 
-	<h2> View X Targets </h2>
-	<hr></hr>
+	<hr width="50%"></hr>
 
-	<!-- Select page and submit to change ...
-			NOT FINAL, switching to normal page switching mechanism soon -->
-	<h2> Change Page </h2>
+	<div class="pagination">
+	    <span class="step-links">
+	        {% if data.has_previous %}
+			<table class="parentTable"><tr>
+				<td><a class="link" href="/edit/page-1">&laquo;</a></td>
+	            <td><a class="link" href="/edit/page-{{page_number|add:"-1"}}/">&lsaquo;</a></td>
+	        {% endif %}
 
-	<form id = "change_page" method = "post" action = "/edit/" enctype = "multipart/form-data">
-		<select name="page_id", id="page_id">
-			{% with ''|center:total_pages as range %}
-				{% for _ in range %}
-					<option id="page" selected="{{ forloop.counter }}" value="{{ forloop.counter }}">{{ forloop.counter }}</option>
-				{% endfor %}
-			{% endwith %}
-    </select>
+	        <span class="current">
+	            <td>{{ data.number }} of {{ data.paginator.num_pages }}</td>
+	        </span>
 
-	<script>
-		$( "select" ).change(function() {
-			var foo = $('#page_id').val();
-			$('#change_page').attr("action", "/edit/page-" + foo + "/");
-        })
-      	.trigger( "change" );
-	</script>
-	<input type = "submit">
-	</form>
-
+	        {% if data.has_next %}
+	            <td><a class="link" href="/edit/page-{{page_number|add:"1"}}/">&rsaquo;</a></td>
+	            <td><a class="link" href="/edit/page-{{total_pages}}/">&raquo;</a></td>
+	        {% endif %}
+			</tr></table>
+	    </span>
+	</div>
 </body>
 </html>

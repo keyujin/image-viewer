@@ -6,7 +6,7 @@ from rest_framework import status
 from .models import Imgs, Target
 
 # Global number of targets to display in edit
-PAGE_SIZE = 2;
+PAGE_SIZE = 5;
 
 # Create your views here.
 
@@ -30,10 +30,19 @@ def edit(request, page_number):
 
 	objects = Target.objects.order_by('pk')
 	objects_paged = Paginator(objects, PAGE_SIZE)
-	page = objects_paged.page(page_number).object_list
 	total_pages = objects_paged.num_pages
+	data = objects_paged.get_page(page_number)
 
-	return render(request, "viewer/edit.html", {'data': page, 'page_number':page_number, 'total_pages':total_pages})
+	return render(request, "viewer/edit.html", {'data': data, 'page_number':page_number, 'page_size':PAGE_SIZE, 'total_pages':total_pages})
+
+@api_view(['POST','GET'])
+def resizePage(request):
+	global PAGE_SIZE
+	if request.data.get("pageSize") is not None:
+		PAGE_SIZE = request.data.get("pageSize")
+	else:
+		return Response(status=status.HTTP_400_BAD_REQUEST)
+	return Response(status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 def submitImage(request):
@@ -68,5 +77,8 @@ def updateImage(request, item_id):
 	return Response(status=status.HTTP_200_OK)
 
 @api_view(['POST','GET'])
-def deleteTarget(request, item_id):
+def deleteTarget(request):
+	key = request.data.get("key");
+	print(key);
+	Target.objects.filter(pk=key).delete();
 	return Response(status=status.HTTP_200_OK)
