@@ -59,8 +59,8 @@
 </script>
 
 <script>
+	/* Setup */
 	var crop_pk = -1;
-	/* ajax setup */
 	var csrftoken = Cookies.get('csrftoken');
 
 	function csrfSafeMethod(method){
@@ -74,6 +74,7 @@
 		}
 	});
 
+	/* Define function when new page size is selected */
 	window.onload = function(e){
 		$('.pOption').click(function(e){
 			e.preventDefault();
@@ -96,6 +97,7 @@
 <body>
   	<h2 id="title">Target Interface</h2>
 
+	<!-- Page size options and legend -->
 	<span class="headerData">
 		<table class="parentTable" name="pageOptions"><tr>
 			<td><span>viewing: </span></td>
@@ -114,6 +116,7 @@
 		<tr></table>
 	</span>
 
+	<!-- Bold the current page size for clarity -->
 	<script>
 		var page_options = document.getElementsByClassName('pOption');
 		for(i = 0; i < page_options.length; i++){
@@ -123,6 +126,7 @@
 		}
 	</script>
 
+	<!-- Structure to contain Cropper -->
 	<div id="cropper" class="modal">
 		<div class="cropperContainer">
   			<img id="cropperImage">
@@ -134,11 +138,10 @@
 		</tr></table>
 	</div>
 
-
+	<!-- Div to append target form -->
 	<div id="imageData" style="margin: 35px"></div>
 
 	<script>
-
 		/* Load images to view */
 		{% for item in data %}
 			// Set pk from item
@@ -150,13 +153,13 @@
 			$('#imageData').append(div);
 
 			// Unique fields for metadata
-
 			$('#orientation').attr('id','orientation'+pk);
 			$('#shape').attr('id', 'shape'+pk);
 			$('#alphanumeric').attr('id','alphanumeric'+pk);
 			$('#color').attr('id','color'+pk);
 			$('#data_url').attr('id','data_url'+pk);
 			$('#key').attr('id', 'key'+pk);
+			$("#nullPK").attr('id',pk);
 
 			// Set fields to their values
 			$("#orientation"+pk).val("{{ item.orientation }}");
@@ -165,62 +168,20 @@
 			$("#color"+pk).val("{{ item.color }}");
 			$('#data_url'+pk).val("{{ item.image }}");
 			$('#key'+pk).val(pk);
-
-			$("#nullPK").attr('id',pk);
 			$("#"+pk).attr('src',"{{item.image}}");
 
+			// Setting border to red (default, manual)
 			$('#'+pk).css("box-shadow", "0px 0px 20px #FF0000");
 
+			// Show Cropper when image is selected
 			$("#"+pk).click(function(){
 				$('#cropper').show();
 				$('#cropperImage').cropper('replace', $(this).attr('src'));
 				crop_pk = $(this).attr('id');
 			});
-
-			$(function(){
-				$('form').on('submit', function(e){
-					e.preventDefault();
-+					e.stopImmediatePropagation();
-					var action = $(document.activeElement).val();
-					var form = $(this).serializeArray();
-					console.log(form);
-
-					if(action == 'save'){
-						var fd = new FormData();
-		                fd.append('orientation', form[0].value);
-		                fd.append('shape', form[1].value);
-		                fd.append('alphanumeric', form[2].value);
-		                fd.append('color', form[3].value);
-		                fd.append('image', form[4].value);
-		                $.ajax({
-		                    type: "POST",
-		                    url: "/updateImage/id-"+form[5].value+"/",
-		                    data: fd,
-		                    processData: false,
-		                    contentType: false
-		                }).done(function(){
-		                });
-					}else if(action == 'delete'){
-						var fd = new FormData();
-						fd.append('key', form[5].value);
-						$.ajax({
-		                    type: "POST",
-		                    url: "/deleteTarget/",
-							data: fd,
-		                    processData: false,
-		                    contentType: false
-		                }).done(function(){
-							window.location.reload(true);
-		                });
-					}else{
-						// Something bad happened ...
-					}
-				});
-			});
-
-
 		{% endfor %}
 
+		// Cropper options
 		$("#cropperImage").cropper({
 			aspectRatio: 1,
 			viewMode: 1,
@@ -232,10 +193,13 @@
         	scalable: false,
 			crop: function(e){}
 		});
+
+		// Hide Cropper on close
 		$('.close').click(function(){
 			$('#cropper').hide();
 		});
 
+		// Set relevant values when confirming a crop
 		$('.accept').click(function(){
 			var cropped_data_url = $('#cropperImage').cropper('getCroppedCanvas').toDataURL();
 			$("#"+crop_pk).attr('src', cropped_data_url);
@@ -243,10 +207,52 @@
 			$('#cropper').hide();
 		});
 
+		// Ajax submission when save or delete a form
+		$(function(){
+			$('form').on('submit', function(e){
+				e.preventDefault();
++					e.stopImmediatePropagation();
+				var action = $(document.activeElement).val();
+				var form = $(this).serializeArray();
+				console.log(form);
+
+				if(action == 'save'){
+					var fd = new FormData();
+					fd.append('orientation', form[0].value);
+					fd.append('shape', form[1].value);
+					fd.append('alphanumeric', form[2].value);
+					fd.append('color', form[3].value);
+					fd.append('image', form[4].value);
+					$.ajax({
+						type: "POST",
+						url: "/updateImage/id-"+form[5].value+"/",
+						data: fd,
+						processData: false,
+						contentType: false
+					}).done(function(){
+					});
+				}else if(action == 'delete'){
+					var fd = new FormData();
+					fd.append('key', form[5].value);
+					$.ajax({
+						type: "POST",
+						url: "/deleteTarget/",
+						data: fd,
+						processData: false,
+						contentType: false
+					}).done(function(){
+						window.location.reload(true);
+					});
+				}else{
+					// Something bad happened ...
+				}
+			});
+		});
 	</script>
 
 	<hr width="50%"></hr>
 
+	<!-- Page selector (Paginator) -->
 	<div class="pagination">
 	    <span class="step-links">
 	        {% if data.has_previous %}

@@ -23,6 +23,7 @@ a, a:visited, a:hover, a:active {
 	color: inherit;
 }
 
+/* Image display */
 .imagePort {
 	height: 250px;
 	width: 250px;
@@ -31,20 +32,14 @@ a, a:visited, a:hover, a:active {
     cursor: pointer;
     transition: 0.3s;
 }
-.imagePort:hover {opacity: 0.7;}
+.imagePort:hover { opacity: 0.7; }
 
-.parentTable{
-	margin: auto;
-}
-.paddedTable {
-	padding-left: 30px
-}
+/* Tables */
+.parentTable{ margin: auto; }
+.paddedTable { padding-left: 30px; }
+.paddedTable td { padding:0 30px 5px 0; }
 
-.paddedTable td {
-    padding:0 30px 5px 0;
-}
-
-/* The Modal (background) */
+/* Modal for Cropper */
 .modal {
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
@@ -59,7 +54,6 @@ a, a:visited, a:hover, a:active {
     background-color: rgb(0,0,0); /* Fallback color */
     background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
 }
-
 .cropperContainer{
 	text-align: center;
 	margin: auto;
@@ -70,11 +64,9 @@ a, a:visited, a:hover, a:active {
     animation-name: zoom;
     animation-duration: 0.6s;
 }
+.cropperContainer img{ width: 100%; }
 
-.cropperContainer img{
-	width: 100%;
-}
-
+/* Legend for distinguishing targets */
 .legendBox {
   float: left;
   width: 20px;
@@ -82,11 +74,11 @@ a, a:visited, a:hover, a:active {
   margin: 5px;
   border: 1px solid rgba(0, 0, 0, .2);
 }
-
 .blue { background: #13b4ff; }
 .red { background: #FF0000; }
 .green { background: #32CD32; }
 
+/* Save & Delete buttons */
 .formSaver, .formDeleter{
 	background-repeat: no-repeat;
 	background-color: Transparent;
@@ -108,64 +100,49 @@ a, a:visited, a:hover, a:active {
     opacity: 0.75;
     cursor: pointer;
 }
-@-webkit-keyframes zoom {
-    from {-webkit-transform:scale(0)}
-    to {-webkit-transform:scale(1)}
-}
 
-@keyframes zoom {
-    from {transform:scale(0)}
-    to {transform:scale(1)}
-}
+/* Page size options (no. targets to display) */
 .pOption{
 	font-size: 16px;
     font-weight: normal;
 	font-family: "Roboto";
     transition: 0.3s;
 }
-.pOption:hover,
-.pOption:focus {
+.pOption:hover, .pOption:focus {
     color: #bbb;
     text-decoration: none;
     cursor: pointer;
 }
-/* The Close Button */
-.close {
+
+/* Close & Accept buttons for Cropper */
+.close, .accept {
     color: #f1f1f1;
     font-size: 20px;
     font-weight: bold;
 	font-family: "Roboto";
     transition: 0.3s;
 }
-
-.close:hover,
-.close:focus {
+.close:hover, .accept:hover
+.close:focus, .accept:focus,{
     color: #bbb;
     text-decoration: none;
     cursor: pointer;
 }
-
 #cropperButtons{
 	margin: auto;
 	padding-top: 15px;
 }
-/* The Close Button */
-.accept {
-    color: #f1f1f1;
-    font-size: 20px;
-    font-weight: bold;
-    transition: 0.3s;
-	font-family: "Roboto";
-}
 
-.accept:hover,
-.accept:focus {
-    color: #bbb;
-    text-decoration: none;
-    cursor: pointer;
+/* Animations */
+@-webkit-keyframes zoom {
+    from {-webkit-transform:scale(0)}
+    to {-webkit-transform:scale(1)}
 }
-
-/* 100% Image Width on Smaller Screens */
+@keyframes zoom {
+    from {transform:scale(0)}
+    to {transform:scale(1)}
+}
+/* 100% image width on smaller screens */
 @media only screen and (max-width: 700px){
     .modal-content {
         width: 100%;
